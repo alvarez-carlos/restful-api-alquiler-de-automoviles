@@ -7,8 +7,8 @@ const cors = require('cors')
 //Rutas
 const Agencias = require('./routes/agencias')
 const Autos = require('./routes/autos')
-const Auth = require('./routes/autenticacion')
-const Reservas = require('./routes/reservas')
+const Usuarios = require('./routes/usuarios')
+//const Reservas = require('./routes/reservas')
 
 //Creo mi app express
 const app = express()
@@ -23,8 +23,8 @@ mongoose.connect(process.env.MONGO_DB_CR, { useNewUrlParser: true, useUnifiedTop
 //Redireccionamiento del cliente a nuestros endpoints dependiento de las rutas 
 app.use('/api/agencias', Agencias)
 app.use('/api/autos', Autos)
-app.use('/api/auth', Auth)
-app.use('/api/reservas', Reservas)
+app.use('/api/usuarios', Usuarios)
+//app.use('/api/reservas', Reservas)
 
 module.exports = app
 
