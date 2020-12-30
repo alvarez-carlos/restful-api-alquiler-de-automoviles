@@ -1,6 +1,6 @@
 const express = require('express')
 const Reservas = require('../models/Reservas')
-const Agencias = require('../models/Agencias')
+const Agencias = require('../models/Agencias') 
 const Autos = require('../models/Autos')
 
 const { autenticado , autorizado } = require('../autorizacion')
@@ -8,7 +8,7 @@ const { autenticado , autorizado } = require('../autorizacion')
 const router = express.Router()
 
 //Listar todas las reservas
-router.get('/', autenticado, (req, res) => {
+router.get('/', autenticado  (req, res) => {
    const { _id } = req.user
    Reservas.find({ usuario_id: _id})
     .exec()
@@ -18,7 +18,7 @@ router.get('/', autenticado, (req, res) => {
 })
 
 //Obtener una reserva especifica por su id
-router.get('/:id', autenticado,(req, res) => {
+router.get('/:id', autenticado, (req, res) => {
   Reservas.findById(req.params.id)
     .exec()
     .then(response => res.status(200).send(response))
@@ -36,17 +36,20 @@ router.post('/', autenticado, (req, res) => {
     fecha_fin, 
     monto, 
     estado,		
-  }).then(response => res.status(201).send(response))
+  })
+   .then(response =>{
+      res.status(201).send(response)
+    })
 })
 
 //Actualizar una reserva por su id
-router.put('/:id', autenticado,(req, res) => {
+router.put('/:id', autenticado,  (req, res) => {
   Reservas.findOneAndUpdate(req.params.id, req.body)
     .then(() => res.sendStatus(204))
 })
 
 //Elimiar una reserva por su id
-router.delete('/:id', autenticado,(req, res) => {
+router.delete('/:id', autenticado, (req, res) => {
   Reservas.findOneAndDelete(req.params.id)
     .exec()
     .then(() => res.sendStatus(204))

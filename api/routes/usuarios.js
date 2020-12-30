@@ -5,6 +5,7 @@ const Usuarios = require('../models/Usuarios')
 const router = express.Router()
 const { autenticado , autorizado } = require('../autorizacion')
 
+
 //sign token
 const creaToken = (_id, salt) => {
   return jwt.sign({ _id }, salt.toString(), {
@@ -13,14 +14,14 @@ const creaToken = (_id, salt) => {
 }
 
 //Lista todos los usuario
-router.get('/', autenticado,  (req, res) => {
+router.get('/', autenticado, (req, res) => {
   Usuarios.find()
     .exec()
     .then(response => res.status(200).send(response))
 })
 
 //Consulta usuario por su id
-router.get('/:id', autenticado, (req, res) => {
+router.get('/:id', autenticado, autorizado(['usuario', 'administrador']), (req, res) => {
   Usuarios.findById(req.params.id)
     .exec()
     .then(usuario => {
@@ -73,7 +74,7 @@ router.post('/registrar', (req, res) => {
 })
 
 //actualiza usuario
-router.put('/:id', autenticado, (req, res) => {
+router.put('/:id', autenticado,  (req, res) => {
   const { cedula, nombre, apellido, correo, direccion, contacto, clave, role } = req.body
   Usuarios.findOne(req.params.id).exec()
   .then( usuario => {
@@ -119,8 +120,8 @@ router.post('/loguear', (req, res) => {
     }) 
 })
 
-//Elimina usuario
-router.delete('/:id',  autenticado, (req, res) => {
+//Elimina usuario's account
+router.delete('/:id',  autenticado,  autorizado(['usuario', 'administrador']), (req, res) => {
   Usuarios.findOneAndDelete(req.params.id)
     .exec()
     .then(() => res.sendStatus(204))
