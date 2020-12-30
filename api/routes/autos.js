@@ -25,6 +25,7 @@ router.post('/', autenticado , (req, res) => {
 
 //Actualizar un auto por su id
 router.put('/:id', autenticado , (req, res) => {
+//  const { disponibilidad } = req.body
   Autos.findOneAndUpdate(req.params.id, req.body)
     .then(() => res.sendStatus(204))
 })

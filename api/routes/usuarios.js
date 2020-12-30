@@ -21,7 +21,7 @@ router.get('/', autenticado, (req, res) => {
 })
 
 //Consulta usuario por su id
-router.get('/:id', autenticado, autorizado(['usuario', 'administrador']), (req, res) => {
+router.get('/:id', autenticado, (req, res) => {
   Usuarios.findById(req.params.id)
     .exec()
     .then(usuario => {
@@ -121,7 +121,7 @@ router.post('/loguear', (req, res) => {
 })
 
 //Elimina usuario's account
-router.delete('/:id',  autenticado,  autorizado(['usuario', 'administrador']), (req, res) => {
+router.delete('/:id',  autenticado, (req, res) => {
   Usuarios.findOneAndDelete(req.params.id)
     .exec()
     .then(() => res.sendStatus(204))

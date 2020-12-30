@@ -8,7 +8,7 @@ const { autenticado , autorizado } = require('../autorizacion')
 const router = express.Router()
 
 //Listar todas las reservas
-router.get('/', autenticado  (req, res) => {
+router.get('/', autenticado,  (req, res) => {
    const { _id } = req.user
    Reservas.find({ usuario_id: _id})
     .exec()
