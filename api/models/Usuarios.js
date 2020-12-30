@@ -12,7 +12,7 @@ const Usuarios = mongoose.model('Usuario', new Schema({
   contacto: String,
   clave: String,
   salt: String,
-  role: String, //usuario, administrador 
+  role: {type:String, default:'usuario'} //usuario, administrador 
  }))
 
 module.exports = Usuarios 

@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const Usuarios = require('../models/Usuarios')
 const router = express.Router()
+const { autenticado , autorizado } = require('../autorizacion')
 
 //sign token
 const creaToken = (_id, salt) => {
@@ -12,14 +13,14 @@ const creaToken = (_id, salt) => {
 }
 
 //Lista todos los usuario
-router.get('/', (req, res) => {
+router.get('/', autenticado,  (req, res) => {
   Usuarios.find()
     .exec()
     .then(response => res.status(200).send(response))
 })
 
 //Consulta usuario por su id
-router.get('/:id', (req, res) => {
+router.get('/:id', autenticado, (req, res) => {
   Usuarios.findById(req.params.id)
     .exec()
     .then(usuario => {
@@ -31,14 +32,14 @@ router.get('/:id', (req, res) => {
 })
 
 //Obten tus datos una ves estes autenticado
-router.get('/me', (req, res) => {
+router.get('/me', autenticado, (req, res) => {
   res.send(req.user)
 })
 
 
 //Registrar usuario
 router.post('/registrar', (req, res) => {
-  const { cedula, nombre, apellido, correo, direccion, contacto, clave, role } = req.body
+  const { cedula, nombre, apellido, correo, direccion, contacto, clave } = req.body
   Usuarios.findOne({ cedula }).exec()
     .then(usuario_por_cedula => {
       if(usuario_por_cedula){
@@ -62,9 +63,8 @@ router.post('/registrar', (req, res) => {
 		  contacto,
 		  clave: clave_encriptada_string,
 		  salt: salt_string,
-		  role,
 	      }).then(() => {
-         	  res.send('Usuario creado con exito')
+         	  res.send({ response: 'Usuario creado con exito', })
 	        })
 	    })
 	 })
@@ -73,13 +73,13 @@ router.post('/registrar', (req, res) => {
 })
 
 //actualiza usuario
-router.put('/:id', (req, res) => {
+router.put('/:id', autenticado, (req, res) => {
   const { cedula, nombre, apellido, correo, direccion, contacto, clave, role } = req.body
   Usuarios.findOne(req.params.id).exec()
   .then( usuario => {
     if(!usuario){
       return res.send('usuario no existe')
-    }
+    }  
     crypto.pbkdf2(clave, usuario.salt, 15000, 64, 'sha1', (err, clave_encriptada_buffer) => {
  	     const clave_encriptada_string =  clave_encriptada_buffer.toString('base64') 
 	      Usuarios.create({
@@ -109,8 +109,10 @@ router.post('/loguear', (req, res) => {
       crypto.pbkdf2(clave, usuario.salt, 15000, 64, 'sha1', (err, clave_buffer) => {
         const clave_encriptada_string = clave_buffer.toString('base64')
 	if (usuario.clave === clave_encriptada_string){
-          const token = creaToken(usuario._id, usuario.salt)
-          return res.send({ token })
+          const key = creaToken(usuario._id, usuario.salt)
+	  const token_encriptado_buffer = creaToken(usuario._id, key)
+	  const token =  token_encriptado_buffer.toString('base64') 
+          return res.send({ token, key })
 	}
 	res.send('Usuario y/o clave Incorrecta')
       })
@@ -118,7 +120,7 @@ router.post('/loguear', (req, res) => {
 })
 
 //Elimina usuario
-router.delete('/:id', (req, res) => {
+router.delete('/:id',  autenticado, (req, res) => {
   Usuarios.findOneAndDelete(req.params.id)
     .exec()
     .then(() => res.sendStatus(204))

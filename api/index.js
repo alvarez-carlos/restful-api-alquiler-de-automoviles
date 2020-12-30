@@ -8,7 +8,7 @@ const cors = require('cors')
 const Agencias = require('./routes/agencias')
 const Autos = require('./routes/autos')
 const Usuarios = require('./routes/usuarios')
-//const Reservas = require('./routes/reservas')
+const Reservas = require('./routes/reservas')
 
 //Creo mi app express
 const app = express()
@@ -24,7 +24,7 @@ mongoose.connect(process.env.MONGO_DB_CR, { useNewUrlParser: true, useUnifiedTop
 app.use('/api/agencias', Agencias)
 app.use('/api/autos', Autos)
 app.use('/api/usuarios', Usuarios)
-//app.use('/api/reservas', Reservas)
+app.use('/api/reservas', Reservas)
 
 module.exports = app
 
